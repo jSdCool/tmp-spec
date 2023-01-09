@@ -5,7 +5,6 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
@@ -13,7 +12,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +22,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.Set;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -47,7 +44,6 @@ public class TmpSpec implements ModInitializer {
 					ServerPlayerInteractionManager interactionManager=player.interactionManager;
 
 					GameMode gamemode = interactionManager.getGameMode();
-					LOGGER.info(gamemode.toString());
 					if(gamemode.equals(GameMode.SURVIVAL)) {
 						if (player.isOnGround()) {
 							Vec3d pos =player.getPos();
@@ -67,16 +63,9 @@ public class TmpSpec implements ModInitializer {
 							return 0;
 						}
 
-						LOGGER.info("a");
-						//player.moveToWorld(context.getSource().getServer().getWorld(position.dimension));
-						LOGGER.info("b");
-						//player.setPos(position.pos.x,position.pos.y,position.pos.z);
-						player.teleport(context.getSource().getServer().getWorld(position.dimension),position.pos.x,position.pos.y,position.pos.z,0,0);
+						player.teleport(context.getSource().getServer().getWorld(position.dimension),position.pos.x,position.pos.y,position.pos.z,player.getYaw(),player.getPitch());
 						LOGGER.info(position.pos.toString());
-						LOGGER.info("c");
 						player.changeGameMode(GameMode.SURVIVAL);
-						LOGGER.info("d");
-						//interactionManager.changeGameMode(GameMode.SURVIVAL);
 
 						context.getSource().sendFeedback(Text.literal("changed gamemode to survival"),true);
 					}else{
@@ -90,6 +79,7 @@ public class TmpSpec implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STARTED.register(TmpSpec::loadPositions);
 	}
 
+	@SuppressWarnings("all")
 	public static void savePositions(){
 		String[] keys = playerPositions.keySet().toArray(new String[]{});
 		new File("config").mkdirs();
