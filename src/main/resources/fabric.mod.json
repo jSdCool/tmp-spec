@@ -1,0 +1,41 @@
+{
+	"schemaVersion": 1,
+	"id": "tmp-spec",
+	"version": "${version}",
+	"name": "tmp spec",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/tmp-spec/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.cbi.tmpspec.ExampleMod"
+		],
+		"client": [
+			"com.cbi.tmpspec.ExampleModClient"
+		]
+	},
+	"mixins": [
+		"tmp-spec.mixins.json",
+		{
+			"config": "tmp-spec.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.14.12",
+		"minecraft": "~1.19.3",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
