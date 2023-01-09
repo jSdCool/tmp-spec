@@ -16,7 +16,7 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.cbi.tmpspec.ExampleMod"
+			"com.cbi.tmpspec.TmpSpec"
 		],
 		"client": [
 			"com.cbi.tmpspec.ExampleModClient"
