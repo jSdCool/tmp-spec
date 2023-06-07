@@ -17,9 +17,6 @@
 	"entrypoints": {
 		"main": [
 			"com.cbi.tmpspec.TmpSpec"
-		],
-		"client": [
-			"com.cbi.tmpspec.ExampleModClient"
 		]
 	},
 	"mixins": [
@@ -31,7 +28,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.14.12",
-		"minecraft": "~1.19.3",
+		"minecraft": "1.20.x",
 		"java": ">=17",
 		"fabric-api": "*"
 	},

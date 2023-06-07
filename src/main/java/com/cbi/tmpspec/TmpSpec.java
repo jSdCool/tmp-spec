@@ -51,7 +51,7 @@ public class TmpSpec implements ModInitializer {
 							player.changeGameMode(GameMode.SPECTATOR);
 							savePositions();
 							LOGGER.info(pos.toString());
-							context.getSource().sendFeedback(Text.literal("changed gamemode to spectator"),true);
+							context.getSource().sendFeedback(()->Text.literal("changed gamemode to spectator"),true);
 						} else {
 							context.getSource().sendError(Text.literal("you are not on the ground"));
 							return 0;
@@ -67,7 +67,7 @@ public class TmpSpec implements ModInitializer {
 						LOGGER.info(position.pos.toString());
 						player.changeGameMode(GameMode.SURVIVAL);
 
-						context.getSource().sendFeedback(Text.literal("changed gamemode to survival"),true);
+						context.getSource().sendFeedback(()-> Text.literal("changed gamemode to survival"),true);
 					}else{
 						context.getSource().sendError(Text.literal("your gamemode is not supported"));
 					}
