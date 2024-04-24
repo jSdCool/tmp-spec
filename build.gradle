@@ -1,5 +1,5 @@
-plugins {
-	id 'fabric-loom' version '1.2-SNAPSHOT'
+plugins {//gradle wrapper --gradle-version 8.6
+	id 'fabric-loom' version '1.5-SNAPSHOT'
 	id 'maven-publish'
 	
 }
