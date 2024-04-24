@@ -50,7 +50,7 @@ public class TmpSpec implements ModInitializer {
 							playerPositions.put(player.getUuidAsString(),new PositionInfo(new Vec3d(pos.x,pos.y,pos.z),player.getWorld().getRegistryKey()));
 							player.changeGameMode(GameMode.SPECTATOR);
 							savePositions();
-							LOGGER.info(pos.toString());
+							//opLOGGER.info(pos.toString());
 							context.getSource().sendFeedback(()->Text.literal("changed gamemode to spectator"),true);
 						} else {
 							context.getSource().sendError(Text.literal("you are not on the ground"));
