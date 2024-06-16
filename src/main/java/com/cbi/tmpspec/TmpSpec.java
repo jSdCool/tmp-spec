@@ -75,7 +75,7 @@ public class TmpSpec implements ModInitializer {
 					return 1;
 				})));
 
-		LOGGER.info("Hello Fabric world!");
+		//LOGGER.info("Hello Fabric world!");
 		ServerLifecycleEvents.SERVER_STARTED.register(TmpSpec::loadPositions);
 	}
 
@@ -103,7 +103,7 @@ public class TmpSpec implements ModInitializer {
 			while(input.hasNext()){
 				String uuid=input.next();
 				double x = input.nextDouble(),y=input.nextDouble(),z=input.nextDouble();
-				Identifier dimRaw=new Identifier(input.next());
+				Identifier dimRaw=Identifier.of(input.next());
 				RegistryKey<World> dimension = null;
 				for(RegistryKey<World> world: server.getWorldRegistryKeys()){
 					if(world.getValue().equals(dimRaw)){
