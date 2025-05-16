@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -20,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -63,7 +65,7 @@ public class TmpSpec implements ModInitializer {
 							return 0;
 						}
 
-						player.teleport(context.getSource().getServer().getWorld(position.dimension),position.pos.x,position.pos.y,position.pos.z,player.getYaw(),player.getPitch());
+						player.teleport(context.getSource().getServer().getWorld(position.dimension),position.pos.x,position.pos.y,position.pos.z, EnumSet.noneOf(PositionFlag.class), player.getYaw(),player.getPitch(),false);
 						LOGGER.info(position.pos.toString());
 						player.changeGameMode(GameMode.SURVIVAL);
 
@@ -111,7 +113,7 @@ public class TmpSpec implements ModInitializer {
 					}
 				}
 				if(dimension==null){
-					LOGGER.error("error while loading player positions: unknown dimension "+dimRaw.toString());
+					LOGGER.error("error while loading player positions: unknown dimension "+dimRaw);
 					continue;
 				}
 				PositionInfo playerPos=new PositionInfo(new Vec3d(x,y,z),dimension);
