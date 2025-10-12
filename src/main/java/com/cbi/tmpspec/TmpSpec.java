@@ -48,8 +48,8 @@ public class TmpSpec implements ModInitializer {
 					GameMode gamemode = interactionManager.getGameMode();
 					if(gamemode.equals(GameMode.SURVIVAL)) {
 						if (player.isOnGround()) {
-							Vec3d pos =player.getPos();
-							playerPositions.put(player.getUuidAsString(),new PositionInfo(new Vec3d(pos.x,pos.y,pos.z),player.getWorld().getRegistryKey()));
+							Vec3d pos =player.getEntityPos();
+							playerPositions.put(player.getUuidAsString(),new PositionInfo(new Vec3d(pos.x,pos.y,pos.z),player.getEntityWorld().getRegistryKey()));
 							player.changeGameMode(GameMode.SPECTATOR);
 							savePositions();
 							//opLOGGER.info(pos.toString());
