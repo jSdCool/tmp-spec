@@ -4,16 +4,16 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.network.packet.s2c.play.PositionFlag;
-import net.minecraft.registry.RegistryKey;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.ServerPlayerInteractionManager;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameMode;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerPlayerGameMode;
+import net.minecraft.world.entity.Relative;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +25,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.commands.Commands.literal;
 
 public class TmpSpec implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
@@ -38,40 +38,40 @@ public class TmpSpec implements ModInitializer {
 	public void onInitialize() {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(literal("specSwap")
 				.executes(context -> {
-					ServerPlayerEntity player = context.getSource().getPlayer();
+					ServerPlayer player = context.getSource().getPlayer();
 					if(player==null){
-							context.getSource().sendError(Text.literal("this command can oly be run by a player"));
+							context.getSource().sendFailure(Component.literal("this command can oly be run by a player"));
 						return 0;
 					}
-					ServerPlayerInteractionManager interactionManager=player.interactionManager;
+					ServerPlayerGameMode interactionManager=player.gameMode;
 
-					GameMode gamemode = interactionManager.getGameMode();
-					if(gamemode.equals(GameMode.SURVIVAL)) {
-						if (player.isOnGround()) {
-							Vec3d pos =player.getPos();
-							playerPositions.put(player.getUuidAsString(),new PositionInfo(new Vec3d(pos.x,pos.y,pos.z),player.getWorld().getRegistryKey()));
-							player.changeGameMode(GameMode.SPECTATOR);
+					GameType gamemode = interactionManager.getGameModeForPlayer();
+					if(gamemode.equals(GameType.SURVIVAL)) {
+						if (player.onGround()) {
+							Vec3 pos =player.position();
+							playerPositions.put(player.getStringUUID(),new PositionInfo(new Vec3(pos.x,pos.y,pos.z),player.level().dimension()));
+							player.setGameMode(GameType.SPECTATOR);
 							savePositions();
 							//opLOGGER.info(pos.toString());
-							context.getSource().sendFeedback(()->Text.literal("changed gamemode to spectator"),true);
+							context.getSource().sendSuccess(()->Component.literal("changed gamemode to spectator"),true);
 						} else {
-							context.getSource().sendError(Text.literal("you are not on the ground"));
+							context.getSource().sendFailure(Component.literal("you are not on the ground"));
 							return 0;
 						}
-					}else if(gamemode.equals(GameMode.SPECTATOR)){
-						PositionInfo position = playerPositions.get(player.getUuidAsString());
+					}else if(gamemode.equals(GameType.SPECTATOR)){
+						PositionInfo position = playerPositions.get(player.getStringUUID());
 						if(position==null){
-							context.getSource().sendError(Text.literal("no previous position found"));
+							context.getSource().sendFailure(Component.literal("no previous position found"));
 							return 0;
 						}
 
-						player.teleport(context.getSource().getServer().getWorld(position.dimension),position.pos.x,position.pos.y,position.pos.z, EnumSet.noneOf(PositionFlag.class), player.getYaw(),player.getPitch(),false);
+						player.teleportTo(context.getSource().getServer().getLevel(position.dimension),position.pos.x,position.pos.y,position.pos.z, EnumSet.noneOf(Relative.class), player.getYRot(),player.getXRot(),false);
 						LOGGER.info(position.pos.toString());
-						player.changeGameMode(GameMode.SURVIVAL);
+						player.setGameMode(GameType.SURVIVAL);
 
-						context.getSource().sendFeedback(()-> Text.literal("changed gamemode to survival"),true);
+						context.getSource().sendSuccess(()-> Component.literal("changed gamemode to survival"),true);
 					}else{
-						context.getSource().sendError(Text.literal("your gamemode is not supported"));
+						context.getSource().sendFailure(Component.literal("your gamemode is not supported"));
 					}
 
 					return 1;
@@ -88,9 +88,9 @@ public class TmpSpec implements ModInitializer {
 		try {
 			FileWriter output=new FileWriter("config/TmpSpecPlayerPositions.pos");
 			for (String key : keys) {
-				Vec3d pos = playerPositions.get(key).pos;
-				RegistryKey<World> dim = playerPositions.get(key).dimension;
-				output.write(key + " " + pos.x + " " + pos.y + " " + pos.z + " " + dim.getValue().toString() + "\n");
+				Vec3 pos = playerPositions.get(key).pos;
+				ResourceKey<Level> dim = playerPositions.get(key).dimension;
+				output.write(key + " " + pos.x + " " + pos.y + " " + pos.z + " " + dim.location().toString() + "\n");
 			}
 			output.close();
 		} catch (IOException e) {
@@ -105,10 +105,10 @@ public class TmpSpec implements ModInitializer {
 			while(input.hasNext()){
 				String uuid=input.next();
 				double x = input.nextDouble(),y=input.nextDouble(),z=input.nextDouble();
-				Identifier dimRaw=Identifier.of(input.next());
-				RegistryKey<World> dimension = null;
-				for(RegistryKey<World> world: server.getWorldRegistryKeys()){
-					if(world.getValue().equals(dimRaw)){
+				ResourceLocation dimRaw=ResourceLocation.parse(input.next());
+				ResourceKey<Level> dimension = null;
+				for(ResourceKey<Level> world: server.levelKeys()){
+					if(world.location().equals(dimRaw)){
 						dimension=world;
 					}
 				}
@@ -116,7 +116,7 @@ public class TmpSpec implements ModInitializer {
 					LOGGER.error("error while loading player positions: unknown dimension "+dimRaw);
 					continue;
 				}
-				PositionInfo playerPos=new PositionInfo(new Vec3d(x,y,z),dimension);
+				PositionInfo playerPos=new PositionInfo(new Vec3(x,y,z),dimension);
 				playerPositions.put(uuid,playerPos);
 
 			}

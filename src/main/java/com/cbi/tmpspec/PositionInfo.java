@@ -1,14 +1,14 @@
 package com.cbi.tmpspec;
 
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class PositionInfo {
-    public Vec3d pos;
-    public RegistryKey<World> dimension;
+    public Vec3 pos;
+    public ResourceKey<Level> dimension;
 
-    PositionInfo(Vec3d pos,RegistryKey<World> dim){
+    PositionInfo(Vec3 pos,ResourceKey<Level> dim){
         this.pos=pos;
         dimension=dim;
     }
