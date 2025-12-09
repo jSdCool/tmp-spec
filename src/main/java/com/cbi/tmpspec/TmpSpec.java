@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
@@ -14,6 +14,7 @@ import net.minecraft.world.entity.Relative;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +24,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Scanner;
 
 import static net.minecraft.commands.Commands.literal;
@@ -65,7 +67,7 @@ public class TmpSpec implements ModInitializer {
 							return 0;
 						}
 
-						player.teleportTo(context.getSource().getServer().getLevel(position.dimension),position.pos.x,position.pos.y,position.pos.z, EnumSet.noneOf(Relative.class), player.getYRot(),player.getXRot(),false);
+						player.teleportTo(Objects.requireNonNull(context.getSource().getServer().getLevel(position.dimension)),position.pos.x,position.pos.y,position.pos.z, EnumSet.noneOf(Relative.class), player.getYRot(),player.getXRot(),false);
 						LOGGER.info(position.pos.toString());
 						player.setGameMode(GameType.SURVIVAL);
 
@@ -90,7 +92,7 @@ public class TmpSpec implements ModInitializer {
 			for (String key : keys) {
 				Vec3 pos = playerPositions.get(key).pos;
 				ResourceKey<Level> dim = playerPositions.get(key).dimension;
-				output.write(key + " " + pos.x + " " + pos.y + " " + pos.z + " " + dim.location().toString() + "\n");
+				output.write(key + " " + pos.x + " " + pos.y + " " + pos.z + " " + dim.identifier().toString() + "\n");
 			}
 			output.close();
 		} catch (IOException e) {
@@ -105,10 +107,10 @@ public class TmpSpec implements ModInitializer {
 			while(input.hasNext()){
 				String uuid=input.next();
 				double x = input.nextDouble(),y=input.nextDouble(),z=input.nextDouble();
-				ResourceLocation dimRaw=ResourceLocation.parse(input.next());
-				ResourceKey<Level> dimension = null;
-				for(ResourceKey<Level> world: server.levelKeys()){
-					if(world.location().equals(dimRaw)){
+				Identifier dimRaw=Identifier.parse(input.next());
+				ResourceKey<@NotNull Level> dimension = null;
+				for(ResourceKey<@NotNull Level> world: server.levelKeys()){
+					if(world.identifier().equals(dimRaw)){
 						dimension=world;
 					}
 				}
