@@ -3,13 +3,13 @@
 	"id": "tmp-spec",
 	"version": "${version}",
 	"name": "tmp spec",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Allow everyone to access spectator mode without allowing them to use it to replace travel.\nAnyone in survival as access to the /specswap command, once run they will be put into spectator mode. The next time they run it they will be put right back to where they were when they entered spectator mode.",
 	"authors": [
-		"Me!"
+		"jSdCool"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/jSdCool/tmp-spec",
+		"sources": "https://github.com/jSdCool/tmp-spec"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/tmp-spec/icon.png",
@@ -27,9 +27,9 @@
 		}
 	],
 	"depends": {
-		"fabricloader": ">=0.14.12",
-		"minecraft": "1.21.x",
-		"java": ">=21",
+		"fabricloader": ">=0.18.4",
+		"minecraft": ">=26.1",
+		"java": ">=25",
 		"fabric-api": "*"
 	},
 	"suggests": {
